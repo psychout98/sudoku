@@ -1,0 +1,61 @@
+body {
+    background-color: rgb(197, 255, 255);
+    max-width: 450px;
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+}
+.board {
+    width: 450px;
+    height: 450px;
+    margin: 100px;
+    overflow-wrap: break-word;
+    overflow: hidden;
+    cursor: crosshair;
+}
+.square {
+    position: absolute;
+    border: 1px solid black;
+    width: 50px;
+    height: 40px;
+    padding-top: 10px;
+    text-align: center;
+    font-size: x-large;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.top-edge {
+    border-top: 2px solid black;
+}
+.right-edge {
+    border-right: 2px solid black;
+}
+.bottom-edge {
+    border-bottom: 2px solid black;
+}
+.left-edge {
+    border-left: 2px solid black;
+}
+.corner {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    font-size: x-small;
+}
+.ct {
+    top: 0px;
+}
+.cb {
+    bottom: 3px;
+}
+.cl {
+    left: 0px;
+}
+.cc {
+    left: 20px;
+}
+.cr {
+    right: 0px;
+}
+.cm {
+    top: 18px;
+}

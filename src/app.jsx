@@ -1,14 +1,26 @@
 import React from 'react';
+import _ from 'underscore';
+import Board from './board';
 
 class App extends React.Component {
+    
     constructor() {
         super();
         this.state = {};
     }
-    render () {
+
+    componentDidMount() {
+
+    }
+
+    componentDidUpdate() {
+
+    }
+
+    render() {
         return (
             <div>
-                Whoopee
+                <Board/>
             </div>
         );
     }
