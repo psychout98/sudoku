@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'underscore';
+import generateBoard from './utils/genBoard';
 
 class Board extends React.Component {
 
@@ -13,8 +14,9 @@ class Board extends React.Component {
     }
 
     componentDidMount() {
+        console.log(generateBoard());
         document.addEventListener('keydown', (e) => this.setCurrent(Number(e.key)));
-        document.addEventListener('wheel', (e) => this.setCurrent(this.state.current + (e.deltaY / 25)));
+        document.addEventListener('wheel', (e) => this.setCurrent(this.state.current + (e.deltaY / 100)));
         var matrix = [];
         for (var i = 0; i < 9; i++) {
             var row = [];
@@ -32,7 +34,7 @@ class Board extends React.Component {
             }
             matrix.push(row);
         }
-        console.log(matrix);
+        //console.log(matrix);
         this.setState({matrix: matrix});
     }
 
