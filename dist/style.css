@@ -4,6 +4,44 @@ body {
     margin: auto;
     overflow: hidden;
     position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+.menu {
+    position: relative;
+    width: 300px;
+    height: 450px;
+    top: 60px;
+    left: 20%;
+}
+.title {
+    position: absolute;
+    font-size: xx-large;
+}
+.items {
+    background-color: white;
+    position: absolute;
+    left: 70px;
+    font-size: 20px;
+    padding: 18px 60px;
+}
+.winner {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 452px;
+    height: 452px;
+    background-color: white;
+    opacity: 0.3;
+}
+.endgame {
+    position: absolute;
+    top: 200px;
+    left: 0px;
+    padding: 0px 50px;
+    font-size: x-large;
+    font-style: oblique;
+    text-shadow: -2px -2px 4px white;
 }
 .board {
     width: 450px;
@@ -19,9 +57,7 @@ body {
     width: 50px;
     height: 40px;
     padding-top: 10px;
-    text-align: center;
     font-size: x-large;
-    font-family: Arial, Helvetica, sans-serif;
 }
 .top-edge {
     border-top: 2px solid black;

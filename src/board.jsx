@@ -1,31 +1,32 @@
 import React from 'react';
 import _ from 'underscore';
-import generateBoard from './utils/genBoard';
 import axios from 'axios';
 
 class Board extends React.Component {
 
-    constructor() {
-        super();
-        this.state = {current: 1, hov: [-1, -1, false]};
+    constructor(props) {
+        super(props);
+        this.state = {time: Date.now(), current: 1, hov: [-1, -1, false], board: [],
+            won: false};
         this.getborder = this.getborder.bind(this);
         this.hovering = this.hovering.bind(this);
         this.select = this.select.bind(this);
         this.setCurrent = this.setCurrent.bind(this);
+        this.checkBoard = this.checkBoard.bind(this);
+        this.win = this.win.bind(this);
     }
 
     componentDidMount() {
-        //console.log(generateBoard());
-        
         document.addEventListener('keydown', (e) => this.setCurrent(Number(e.key)));
         document.addEventListener('wheel', (e) => this.setCurrent(this.state.current + (e.deltaY / 100)));
         var matrix = [];
-        axios('https://sugoku.herokuapp.com/board?difficulty=easy').then((result) => {
-            var board = result.data.board;
+        axios(`https://sugoku.herokuapp.com/board?difficulty=${this.props.difficulty}`).then((result) => {
+            this.setState({board: result.data.board});
+            //this.props.setBoard(result.data.board)
         for (var i = 0; i < 9; i++) {
             var row = [];
             for (var j = 0; j < 9; j++) {
-                var value = board[i][j];
+                var value = this.state.board[i][j];
                 var square = {i: i, j: j,
                     val: value, current: value === 0 ? 10 : value, show: value === 0 ? '' : value,
                     border: this.getborder(i, j),
@@ -44,7 +45,36 @@ class Board extends React.Component {
     }
 
     componentDidUpdate() {
+    }
 
+    checkBoard() {
+        var chunks = [{},{},{},{},{},{},{},{},{}];
+        var rows = [{},{},{},{},{},{},{},{},{}];
+        var cols = [{},{},{},{},{},{},{},{},{}];
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
+                for (var a = 0; a < 3; a++) {
+                    for (var b = 0; b < 3; b++) {
+                        if (rows[3*i + j][this.state.board[3*i + j][3*a + b]]) {
+                            return false; //over here dipshit
+                        } else {
+                            rows[3*i + j][this.state.board[3*i + j][3*a + b]] = true;
+                        }
+                        if (cols[3*a + b][this.state.board[3*a + b][3*i + j]]) {
+                            return false;
+                        } else {
+                            cols[3*a + b][this.state.board[3*a + b][3*i + j]] = true;
+                        }
+                        if (chunks[3*i + j][this.state.board[3*i + a][3*j + b]]) {
+                            return false;
+                        } else {
+                            chunks[3*i + j][this.state.board[3*i + a][3*j + b]] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     setCurrent(value) {
@@ -89,6 +119,7 @@ class Board extends React.Component {
     select(i, j, e, rc) {
         e.preventDefault();
         var matrix = this.state.matrix;
+        var board = this.state.board;
         var current = Math.floor(this.state.current);
         if (current > 0) {
             if (rc) {
@@ -119,10 +150,26 @@ class Board extends React.Component {
                 matrix[i][j].corners[k][0] = 10;
             }
         }
-        this.setState({matrix: matrix});
+        board[i][j] = current === 10 ? 0 : current;
+        this.setState({matrix: matrix, board: board});
         if (this.state.hov[2]) {
             this.hovering(this.state.hov[0], this.state.hov[1], true);
         }
+        if (this.checkBoard()) {
+            this.win();
+        }
+    }
+
+    win() {
+        var matrix = this.state.matrix;
+        for (var row of matrix) {
+            for (var square of row) {
+                square.val = square.current;
+                square.bgc = 'rgb(100,255,100)';
+            }
+        }
+        this.setState({matrix: matrix, won: true, time: Date.now() - this.state.time});
+        //this.props.win(this.state.board);
     }
 
     render() {
@@ -131,10 +178,10 @@ class Board extends React.Component {
                 return <div key={square.i + '' + square.j} className={`square${square.border}`}
                         style={{top: square.i*50, left: square.j*50,
                         backgroundColor: square.bgc}}
-                        onMouseEnter={() => this.hovering(square.i, square.j, true)}
-                        onMouseLeave={() => this.hovering(square.i, square.j, false)}
-                        onClick={(e) => this.select(square.i, square.j, e, false)}
-                        onContextMenu={(e) => this.select(square.i, square.j, e, true)}>
+                        onMouseEnter={square.val === 0 ? () => this.hovering(square.i, square.j, true) : null}
+                        onMouseLeave={square.val === 0 ? () => this.hovering(square.i, square.j, false) : null}
+                        onClick={square.val === 0 ? (e) => this.select(square.i, square.j, e, false) : null}
+                        onContextMenu={square.val === 0 ? (e) => this.select(square.i, square.j, e, true) : null}>
                         {square.show}
                         {_.map(square.corners, (corner) => {
                             if (corner[0] < 10) {
@@ -143,7 +190,18 @@ class Board extends React.Component {
                         })}
                     </div>;
             });
-        })}</div>);
+        })}
+            {this.state.won ? <div>
+                <div className="winner"/>
+                <div className="endgame">
+                Nailed it! You solved that puzzle in
+                {' ' + Math.floor(this.state.time / 60000)}:
+                {Math.floor((this.state.time % 60000) / 1000)}.
+                {(this.state.time % 1000) + ' '}
+                minutes, lol
+                </div>
+            </div> : null}
+        </div>);
     }
 }
 
