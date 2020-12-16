@@ -7,7 +7,7 @@ class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {time: Date.now(), current: 1, hov: [-1, -1, false], board: [],
-            won: false};
+            won: false, difficulty: this.props.difficulty};
         this.getborder = this.getborder.bind(this);
         this.hovering = this.hovering.bind(this);
         this.select = this.select.bind(this);
@@ -20,9 +20,18 @@ class Board extends React.Component {
         document.addEventListener('keydown', (e) => this.setCurrent(Number(e.key)));
         document.addEventListener('wheel', (e) => this.setCurrent(this.state.current + (e.deltaY / 100)));
         var matrix = [];
-        axios(`https://sugoku.herokuapp.com/board?difficulty=${this.props.difficulty}`).then((result) => {
-            this.setState({board: result.data.board});
-            //this.props.setBoard(result.data.board)
+        axios.get(this.props.board === null ?
+            `https://sugoku.herokuapp.com/board?difficulty=${this.props.difficulty}`
+            : `/board?id=${this.props.board}`)
+            .then((result) => {
+            this.setState({board: result.data.board,
+                    difficulty: result.data.difficulty || this.state.difficulty});
+            if (this.props.board === null) {
+                axios.post('/board', {board: result.data.board, difficulty: this.props.difficulty})
+                    .then((data) => {
+                        this.props.setId(data.data);
+                });
+            }
         for (var i = 0; i < 9; i++) {
             var row = [];
             for (var j = 0; j < 9; j++) {

@@ -21,9 +21,10 @@ body {
 .items {
     background-color: white;
     position: absolute;
-    left: 70px;
+    left: 50px;
+    width: 200px;
+    height: 60px;
     font-size: 20px;
-    padding: 18px 60px;
 }
 .winner {
     position: absolute;
@@ -42,6 +43,11 @@ body {
     font-size: x-large;
     font-style: oblique;
     text-shadow: -2px -2px 4px white;
+}
+.share {
+    position: absolute;
+    bottom: -40px;
+    left: 0px;
 }
 .board {
     width: 450px;
