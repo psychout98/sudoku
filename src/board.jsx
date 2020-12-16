@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'underscore';
 import generateBoard from './utils/genBoard';
+import axios from 'axios';
 
 class Board extends React.Component {
 
@@ -14,15 +15,19 @@ class Board extends React.Component {
     }
 
     componentDidMount() {
-        console.log(generateBoard());
+        //console.log(generateBoard());
+        
         document.addEventListener('keydown', (e) => this.setCurrent(Number(e.key)));
         document.addEventListener('wheel', (e) => this.setCurrent(this.state.current + (e.deltaY / 100)));
         var matrix = [];
+        axios('https://sugoku.herokuapp.com/board?difficulty=easy').then((result) => {
+            var board = result.data.board;
         for (var i = 0; i < 9; i++) {
             var row = [];
             for (var j = 0; j < 9; j++) {
+                var value = board[i][j];
                 var square = {i: i, j: j,
-                    val: 10, current: 10, show: '',
+                    val: value, current: value === 0 ? 10 : value, show: value === 0 ? '' : value,
                     border: this.getborder(i, j),
                     corners: [],
                     bgc: 'white'};
@@ -34,8 +39,8 @@ class Board extends React.Component {
             }
             matrix.push(row);
         }
-        //console.log(matrix);
         this.setState({matrix: matrix});
+    });
     }
 
     componentDidUpdate() {
