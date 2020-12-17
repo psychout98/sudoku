@@ -7,6 +7,18 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
 }
+.logo {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 120px;
+    height: 60px;
+    font-weight: bold;
+    font-size: 50px;
+    font-style: oblique;
+    color: white;
+    text-shadow: -2px -2px 4px black;
+}
 .menu {
     position: relative;
     width: 300px;
@@ -37,17 +49,30 @@ body {
 }
 .endgame {
     position: absolute;
-    top: 200px;
-    left: 0px;
-    padding: 0px 50px;
+    top: 3px;
+    left: 50px;
+    width: 350px;
+    background-color: white;
     font-size: x-large;
     font-style: oblique;
-    text-shadow: -2px -2px 4px white;
+    color: black;
 }
-.share {
+.loading {
+    position: absolute;
+    top: 40%;
+    left: 40%;
+}
+.utility {
     position: absolute;
     bottom: -40px;
-    left: 0px;
+}
+.help {
+    position: fixed;
+    left: -300px;
+    top: 0px;
+    width: 300px;
+    height: 450px;
+    border: 1px solid red;
 }
 .board {
     width: 450px;

@@ -65,7 +65,7 @@ class Board extends React.Component {
                 for (var a = 0; a < 3; a++) {
                     for (var b = 0; b < 3; b++) {
                         if (rows[3*i + j][this.state.board[3*i + j][3*a + b]]) {
-                            return false; //over here dipshit
+                            return false;
                         } else {
                             rows[3*i + j][this.state.board[3*i + j][3*a + b]] = true;
                         }
@@ -174,10 +174,19 @@ class Board extends React.Component {
         for (var row of matrix) {
             for (var square of row) {
                 square.val = square.current;
-                square.bgc = 'rgb(100,255,100)';
+                square.bgc = 'white';
             }
         }
-        this.setState({matrix: matrix, won: true, time: Date.now() - this.state.time});
+        var time = Date.now() - this.state.time;
+        var mins = Math.floor(time / 60000);
+        var s = Math.floor((time % 60000) / 1000);
+        var ms = Math.floor((time % 1000) / 100);
+        if (mins > 0) {
+            time = mins + ':' + (s < 10 ? '0' + s : s) + '.' + ms + ' minutes';
+        } else {
+            time = s + '.' + ms + ' seconds';
+        }
+        this.setState({matrix: matrix, won: true, time: time});
         //this.props.win(this.state.board);
     }
 
@@ -203,11 +212,7 @@ class Board extends React.Component {
             {this.state.won ? <div>
                 <div className="winner"/>
                 <div className="endgame">
-                Nailed it! You solved that puzzle in
-                {' ' + Math.floor(this.state.time / 60000)}:
-                {Math.floor((this.state.time % 60000) / 1000)}.
-                {(this.state.time % 1000) + ' '}
-                minutes, lol
+                Nailed it! You solved that puzzle in {this.state.time}
                 </div>
             </div> : null}
         </div>);

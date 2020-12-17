@@ -1,13 +1,14 @@
 import React from 'react';
 import _ from 'underscore';
 import Board from './board';
+import Stats from './stats';
 
 class App extends React.Component {
 
     constructor() {
         super();
-        this.state = {started: false, difficulty: 'easy', board: null,
-            buttons: [], authing: false, user: '', pass: ''};
+        this.state = {started: false, difficulty: 'easy', board: null, help: 'Help',
+            buttons: [], authing: false, user: '', pass: '', authorized: false};
         this.menu = this.menu.bind(this);
         this.game = this.game.bind(this);
         this.login = this.login.bind(this);
@@ -28,11 +29,14 @@ class App extends React.Component {
                     difficulty: 'hard'}),top: 300}];
             var menu = [{text: 'start a game',
                 method: () => this.setState({buttons: diffs}),
-                top: 120}, {text: 'sign in', top : 210,
+                top: 120}, {text: this.state.authorized ?
+                    'my puzzles or something' : 'sign in', top : 300,
                 method: () => this.setState({buttons: 
                     [{text: 'log in / create account',
                     method: this.login, top: 300}], authing: true
-                })}];
+                })},
+                {text: 'leaderboard', top: 210,
+                method: () => this.setState({leaders: true, buttons: []})}];
             diffs.push();
             diffs.push();
             diffs.push();
@@ -63,7 +67,7 @@ class App extends React.Component {
     }
 
     login() {
-        this.setState({authing: false});
+        //this.setState({authing: false});
         console.log(this.state.upass);
     }
 
@@ -75,6 +79,7 @@ class App extends React.Component {
             <div className="menu">
                 <div className="title">Welcome to my MVP</div>
                 {this.state.authing ? this.fields() : null}
+                {this.state.leaders ? <Stats/> : null}
                 {_.map(this.state.buttons, (button) => {
                     //console.log(button.method);
                     return (
@@ -89,9 +94,13 @@ class App extends React.Component {
     }
 
     clipId(e) {
+        if (navigator.clipboard === undefined) {
+            window.confirm(e.target.value);
+        } else {
         navigator.clipboard.writeText(e.target.value)
             .then(() => window.confirm('Link to this puzzle has been copied to the clipboard'))
                 .catch((err) => console.log(err));
+        }
     }
 
     game() {
@@ -99,11 +108,18 @@ class App extends React.Component {
             <div>
                 <Board difficulty={this.state.difficulty} board={this.state.board}
                 setId={(id) => this.setState({board: id})}/>
-                {this.state.board === null ? null :
-                <button className="share" value={`http://ec2-3-133-125-0.us-east-2.compute.amazonaws.com?id=${this.state.board}`}
-                    onClick={this.clipId}>
+                {this.state.board === null ? <div className="loading">Loading...</div> :
+                <button className="utility" value={`http://ec2-3-133-125-0.us-east-2.compute.amazonaws.com?id=${this.state.board}`}
+                    onClick={this.clipId} style={{left: 0}}>
                     Share puzzle
                 </button>}
+                <button className="utility" style={{left: 100}}
+                    onClick={() => this.setState({
+                        help: this.state.help === 'Help' ? 'Close help' : 'Help'
+                        })}>
+                    {this.state.help}
+                </button>
+                {this.state.help ? null : <div className="help">Help menu</div>}
             </div>
             );
     }
@@ -111,6 +127,7 @@ class App extends React.Component {
     render() {
         return (
             <div>
+                <a className="logo" href="http://ec2-3-133-125-0.us-east-2.compute.amazonaws.com">MVP</a>
                 {this.state.started ? this.game() : this.menu()}
             </div>
         );
